@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV to XML Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        #fileInput {
+            margin-bottom: 20px;
+        }
+        #convertButton {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSV to XML Converter</h1>
+    <input type="file" id="fileInput" accept=".csv">
+    <button id="convertButton">Convert to XML</button>
+
+    <script>
+        function csvToXml(csv) {
+            const rows = csv.split('\n').map(row => row.split(','));
+            const headers = rows[0];
+            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<data>\n';
+            
+            for (let i = 1; i < rows.length; i++) {
+                if (rows[i].length === headers.length) {
+                    xml += '  <record>\n';
+                    for (let j = 0; j < headers.length; j++) {
+                        xml += `    <${headers[j]}>${rows[i][j]}</${headers[j]}>\n`;
+                    }
+                    xml += '  </record>\n';
+                }
+            }
+            xml += '</data>';
+            return xml;
+        }
+
+        document.getElementById('convertButton').addEventListener('click', () => {
+            const fileInput = document.getElementById('fileInput').files[0];
+            if (!fileInput) {
+                alert('Please select a CSV file first');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csvData = e.target.result;
+                const xmlContent = csvToXml(csvData);
+
+                const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8;' });
+                const link = document.createElement('a');
+                if (link.download !== undefined) { // feature detection
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'output.xml');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            };
+            reader.readAsText(fileInput);
+        });
+    </script>
+</body>
+</html>
