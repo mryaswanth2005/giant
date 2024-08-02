@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to XML Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        #jsonInput {
+            width: 80%;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+        #convertButton {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>JSON to XML Converter</h1>
+    <textarea id="jsonInput" placeholder="Paste JSON here..."></textarea>
+    <button id="convertButton">Convert to XML</button>
+
+    <script>
+        function jsonToXml(jsonObj) {
+            let xml = '';
+            
+            for (let prop in jsonObj) {
+                if (jsonObj.hasOwnProperty(prop)) {
+                    if (jsonObj[prop] instanceof Array) {
+                        for (let arrayItem of jsonObj[prop]) {
+                            xml += '<' + prop + '>';
+                            xml += jsonToXml(new Object(arrayItem));
+                            xml += '</' + prop + '>';
+                        }
+                    } else if (typeof jsonObj[prop] == 'object') {
+                        xml += '<' + prop + '>';
+                        xml += jsonToXml(jsonObj[prop]);
+                        xml += '</' + prop + '>';
+                    } else {
+                        xml += '<' + prop + '>';
+                        xml += jsonObj[prop];
+                        xml += '</' + prop + '>';
+                    }
+                }
+            }
+            return xml;
+        }
+
+        document.getElementById('convertButton').addEventListener('click', () => {
+            const jsonInput = document.getElementById('jsonInput').value;
+            let jsonObj;
+            try {
+                jsonObj = JSON.parse(jsonInput);
+            } catch (e) {
+                alert('Invalid JSON format');
+                return;
+            }
+
+            const xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n' + jsonToXml(jsonObj);
+            const blob = new Blob([xmlContent], { type: 'application/xml;charset=utf-8;' });
+            const link = document.createElement('a');
+            if (link.download !== undefined) { // feature detection
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'output.xml');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+    </script>
+</body>
+</html>

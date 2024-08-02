@@ -1,0 +1,54 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV to Excel Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        #fileInput {
+            margin-bottom: 20px;
+        }
+        #convertButton {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>CSV to Excel Converter</h1>
+    <input type="file" id="fileInput" accept=".csv">
+    <button id="convertButton">Convert to Excel</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+    <script>
+        document.getElementById('convertButton').addEventListener('click', () => {
+            const fileInput = document.getElementById('fileInput').files[0];
+            if (!fileInput) {
+                alert('Please select a CSV file first');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csvData = e.target.result;
+                const workbook = XLSX.utils.book_new();
+                const worksheet = XLSX.utils.csv_to_sheet(csvData);
+
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+                XLSX.writeFile(workbook, 'output.xlsx');
+            };
+            reader.readAsText(fileInput);
+        });
+    </script>
+</body>
+</html> -->
